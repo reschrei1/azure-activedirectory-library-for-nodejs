@@ -1,0 +1,266 @@
+{
+	"variables": [],
+	"info": {
+		"name": "Azure AD Public",
+		"_postman_id": "f4b451f5-8d96-1632-765b-1c55015f6613",
+		"description": "Auth code flow.",
+		"schema": "https://schema.getpostman.com/json/collection/v2.0.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Authorize Request",
+			"request": {
+				"url": "https://login.microsoftonline.com/[tenant id]/oauth2/authorize?client_id=[client ID]&response_type=code&redirect_uri=http%3A%2F%2Flocalhost%2Fmyapp%2F&response_mode=query&scope=openid",
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"description": "A sign in request to begin the OAuth 2.0 code flow.  Be sure to copy & paste into a browser! Running this request in Postman will just return you the HTML of our login pages. You need to fill in your own tenant ID and clientID. You can get the tenant ID from the endpoints for your app. in Azure AD. Running this will ask you for your Azure AD credentials. Note that this will return a 'HTTP Error 404.0 - Not Found' because there is no 'localhost/myapp'. Just ignore and copy the code - the section after '?code=' and before '&session_state=' "
+			},
+			"response": []
+		},
+		{
+			"name": "Token Request - Auth Code",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"type": "text/javascript",
+						"exec": "tests['Status Code is 200'] = (responseCode.code === 200);\n\nif (responseCode.code === 200) {\n    \n    try {\n        var tokens = JSON.parse(responseBody),\n            access_token = tokens.access_token;\n    }\n\n    catch(e) {\n        console.log(e);\n    }\n    \n    postman.setGlobalVariable(\"access_token\", access_token);\n}"
+					}
+				}
+			],
+			"request": {
+				"url": "https://login.microsoftonline.de/e997ec22-b401-4d23-a9b4-a1d482e4e635/oauth2/token",
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/x-www-url-form-urlencoded",
+						"description": ""
+					}
+				],
+				"body": {
+					"mode": "urlencoded",
+					"urlencoded": [
+						{
+							"key": "client_id",
+							"value": "ed46e49c-5241-43ee-a23d-8c4e750d83cb",
+							"type": "text",
+							"enabled": true
+						},
+						{
+							"key": "scope",
+							"value": "openid",
+							"type": "text",
+							"enabled": true
+						},
+						{
+							"key": "redirect_uri",
+							"value": "http://ranchermaster.germanycentral.cloudapp.microsoftazure.de/",
+							"type": "text",
+							"enabled": true
+						},
+						{
+							"key": "grant_type",
+							"value": "authorization_code",
+							"type": "text",
+							"enabled": true
+						},
+						{
+							"key": "client_secret",
+							"value": "CHyNVmlz5nC+AUfCoKoja8WxnovmYBD1FuZ49k0t6lE=",
+							"type": "text",
+							"enabled": true
+						},
+						{
+							"key": "code",
+							"value": "[code]",
+							"type": "text",
+							"enabled": true
+						}
+					]
+				},
+				"description": "The POST request to exchange an auth code for an access token.  Be sure to replace the code with your own, that you received after signing in! Again you need to fill in your own client_id and client_secret. Then click 'Send'. This will return an access token, an ID token and a refresh token. You can see what's in the access / ID token by copy / paste into 'jwt.io' in a browser. "
+			},
+			"response": []
+		},
+		{
+			"name": "Userinfo Request",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"type": "text/javascript",
+						"exec": "tests['Status Code is 200'] = (responseCode.code === 200);\n"
+					}
+				}
+			],
+			"request": {
+				"url": "https://login.windows.net/common/openid/userinfo",
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "Bearer {{access_token}}",
+						"description": ""
+					}
+				],
+				"body": {
+					"mode": "formdata",
+					"formdata": []
+				},
+				"description": "An example use of the access_token. Normally you would replace the access token with the one you got from the token request! This is done autimatically. Just click 'Send'. You should get attributes like 'oid' / 'sub' / 'tid' back."
+			},
+			"response": []
+		},
+		{
+			"name": "Token Request - Auth Code-Demo",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"type": "text/javascript",
+						"exec": "tests['Status Code is 200'] = (responseCode.code === 200);\n\nif (responseCode.code === 200) {\n    \n    try {\n        var tokens = JSON.parse(responseBody),\n            access_token = tokens.access_token;\n    }\n\n    catch(e) {\n        console.log(e);\n    }\n    \n    postman.setGlobalVariable(\"access_token\", access_token);\n}"
+					}
+				}
+			],
+			"request": {
+				"url": "https://login.microsoftonline.de/TSIDDKey4IoT.onmicrosoft.de/oauth2/token",
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/x-www-url-form-urlencoded",
+						"description": ""
+					}
+				],
+				"body": {
+					"mode": "urlencoded",
+					"urlencoded": [
+						{
+							"key": "client_id",
+							"value": "ed46e49c-5241-43ee-a23d-8c4e750d83cb",
+							"type": "text",
+							"enabled": true
+						},
+						{
+							"key": "scope",
+							"value": "openid",
+							"type": "text",
+							"enabled": true
+						},
+						{
+							"key": "resource",
+							"value": "https://graph.cloudapi.de",
+							"type": "text",
+							"enabled": true
+						},
+						{
+							"key": "grant_type",
+							"value": "password",
+							"type": "text",
+							"enabled": true
+						},
+						{
+							"key": "username",
+							"value": "demo@TSIDDKey4IoT.onmicrosoft.de",
+							"type": "text",
+							"enabled": true
+						},
+						{
+							"key": "password",
+							"value": "#Password9",
+							"type": "text",
+							"enabled": true
+						}
+					]
+				},
+				"description": "The POST request to exchange an auth code for an access token.  Be sure to replace the code with your own, that you received after signing in! Again you need to fill in your own client_id and client_secret. Then click 'Send'. This will return an access token, an ID token and a refresh token. You can see what's in the access / ID token by copy / paste into 'jwt.io' in a browser. "
+			},
+			"response": []
+		},
+		{
+			"name": "Authorize Request Rancher UI",
+			"request": {
+				"url": "https://login.microsoftonline.de/common/oauth2/authorize?client_id=ed46e49c-5241-43ee-a23d-8c4e750d83cb&response_type=code&redirect_uri=urn:ietf:wg:oauth:2.0:oob&response_mode=query&scope=openid&state=234535&prompt=admin_consent",
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "formdata",
+					"formdata": []
+				},
+				"description": "A sign in request to begin the OAuth 2.0 code flow.  Be sure to copy & paste into a browser! Running this request in Postman will just return you the HTML of our login pages. You need to fill in your own tenant ID and clientID. You can get the tenant ID from the endpoints for your app. in Azure AD. Running this will ask you for your Azure AD credentials. Note that this will return a 'HTTP Error 404.0 - Not Found' because there is no 'localhost/myapp'. Just ignore and copy the code - the section after '?code=' and before '&session_state=' "
+			},
+			"response": []
+		},
+		{
+			"name": "Token Request - Auth Code-Demo copy",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"type": "text/javascript",
+						"exec": "tests['Status Code is 200'] = (responseCode.code === 200);\n\nif (responseCode.code === 200) {\n    \n    try {\n        var tokens = JSON.parse(responseBody),\n            access_token = tokens.access_token;\n    }\n\n    catch(e) {\n        console.log(e);\n    }\n    \n    postman.setGlobalVariable(\"access_token\", access_token);\n}"
+					}
+				}
+			],
+			"request": {
+				"url": "https://login.microsoftonline.de/TSIDDKey4IoT.onmicrosoft.de/oauth2/token",
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/x-www-url-form-urlencoded",
+						"description": ""
+					}
+				],
+				"body": {
+					"mode": "urlencoded",
+					"urlencoded": [
+						{
+							"key": "client_id",
+							"value": "ed46e49c-5241-43ee-a23d-8c4e750d83cb",
+							"type": "text",
+							"enabled": true
+						},
+						{
+							"key": "scope",
+							"value": "openid",
+							"type": "text",
+							"enabled": true
+						},
+						{
+							"key": "resource",
+							"value": "https://graph.cloudapi.de",
+							"type": "text",
+							"enabled": true
+						},
+						{
+							"key": "grant_type",
+							"value": "password",
+							"type": "text",
+							"enabled": true
+						},
+						{
+							"key": "username",
+							"value": "demo@TSIDDKey4IoT.onmicrosoft.de",
+							"type": "text",
+							"enabled": true
+						},
+						{
+							"key": "password",
+							"value": "Password99",
+							"type": "text",
+							"enabled": true
+						}
+					]
+				},
+				"description": "The POST request to exchange an auth code for an access token.  Be sure to replace the code with your own, that you received after signing in! Again you need to fill in your own client_id and client_secret. Then click 'Send'. This will return an access token, an ID token and a refresh token. You can see what's in the access / ID token by copy / paste into 'jwt.io' in a browser. "
+			},
+			"response": []
+		}
+	]
+}
